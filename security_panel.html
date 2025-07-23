@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Security Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-xl font-bold text-center">🔒 Security QR Scanner</h1>
+  <div class="flex justify-center my-4">
+    <button onclick="startScan()" class="bg-blue-600 text-white px-4 py-2 rounded">Start Scanning</button>
+  </div>
+  <div id="qr-reader" style="width:300px;" class="mx-auto"></div>
+  <div id="resultBox" class="text-center mt-4 font-bold"></div>
+  <script>
+    let scannerStarted = false;
+    function startScan() {
+      if (scannerStarted) return;
+      scannerStarted = true;
+      new Html5Qrcode("qr-reader").start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        function(decodedText) {
+          document.getElementById("resultBox").innerHTML = "QR Scanned: " + decodedText;
+        }
+      );
+    }
+  </script>
+</body>
+</html>

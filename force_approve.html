@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🕒 Force Approve - EntryLogX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-yellow-100 flex justify-center items-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-xl text-center">
+    <h1 class="text-3xl font-bold mb-4">🕒 Force Approve Panel</h1>
+    <p class="mb-4 text-gray-700">This will auto-approve visitors pending for more than 10 minutes.</p>
+    
+    <button onclick="forceApprove()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+      🔁 Force Approve Now
+    </button>
+
+    <div id="output" class="mt-6 text-lg font-semibold text-green-700"></div>
+  </div>
+
+  <script>
+    async function forceApprove() {
+      const pendingRes = await fetch("http://127.0.0.1:8000/pending");
+      const pendingVisitors = await pendingRes.json();
+      const ids = pendingVisitors.map(v => v[0]);
+
+      if (ids.length === 0) {
+        document.getElementById("output").innerText = "✅ No pending visitors found.";
+        return;
+      }
+
+      const res = await fetch("http://127.0.0.1:8000/security/force-approve", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ ids: ids })
+      });
+
+      const result = await res.json();
+      const approved = result.force_approved;
+
+      if (approved.length > 0) {
+        document.getElementById("output").innerText = `✅ Force approved ${approved.length}
